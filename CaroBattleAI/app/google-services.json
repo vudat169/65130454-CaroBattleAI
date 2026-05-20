@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "644507782777",
+    "project_id": "carobattle-154c6",
+    "storage_bucket": "carobattle-154c6.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:644507782777:android:b06d83223628e666908ea8",
+        "android_client_info": {
+          "package_name": "ck65130454.carobattle"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDPTl9EdrTjMirjxlAVW__fdYnLia_ebp8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
