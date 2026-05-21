@@ -79,4 +79,94 @@ public class CaroEngine {
     public String[][] getBoard() {
         return board;
     }
+
+    // =================================================================
+    // PHẦN THÊM MỚI: THUẬT TOÁN PHÂN TÍCH NƯỚC ĐI CỦA MÁY (BOT AI)
+    // =================================================================
+
+    // Hàm chính để điều hướng tìm nước đi dựa trên độ khó, trả về mảng [dòng, cột]
+    public int[] getBotMove(String difficulty, String botPlayer, String humanPlayer) {
+        if (difficulty.equals("hard")) {
+            return getHardMove(botPlayer, humanPlayer);
+        } else if (difficulty.equals("medium")) {
+            return getMediumMove(botPlayer, humanPlayer);
+        } else {
+            return getRandomMove(); // Mặc định chế độ Dễ
+        }
+    }
+
+    // 1. Cấp độ Dễ: Nhắm mắt đánh bừa vào bất kỳ ô nào còn trống
+    private int[] getRandomMove() {
+        java.util.ArrayList<int[]> emptyCells = new java.util.ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                if (board[i][j].equals("")) {
+                    emptyCells.add(new int[]{i, j});
+                }
+            }
+        }
+        if (!emptyCells.isEmpty()) {
+            int randomIndex = new java.util.Random().nextInt(emptyCells.size());
+            return emptyCells.get(randomIndex);
+        }
+        return null;
+    }
+
+    // 2. Cấp độ Bình thường: Biết đi chặn nếu Người chơi chuẩn bị ăn 4 ô liên tiếp
+    private int[] getMediumMove(String botPlayer, String humanPlayer) {
+        // Tìm nước để CHẶN đường thắng sắp tới của Con người
+        int[] blockMove = findWinningMove(humanPlayer);
+        if (blockMove != null) return blockMove;
+
+        // Nếu không có gì nguy hiểm thì quay lại đánh ngẫu nhiên
+        return getRandomMove();
+    }
+
+    // 3. Cấp độ Khó: Ưu tiên tự thắng > Chặn người chơi > Chiếm tâm bàn cờ > Random
+    private int[] getHardMove(String botPlayer, String humanPlayer) {
+        // Ưu tiên 1: Tự tìm nước đi giúp MÁY THẮNG LUÔN trong lượt này
+        int[] winMove = findWinningMove(botPlayer);
+        if (winMove != null) return winMove;
+
+        // Ưu tiên 2: CHẶN đứng đường thắng chí mạng của NGƯỜI CHƠI
+        int[] blockMove = findWinningMove(humanPlayer);
+        if (blockMove != null) return blockMove;
+
+        // Ưu tiên 3: Ưu tiên chiếm giữ 4 ô chiến lược ở vùng trung tâm (1,1), (1,2), (2,1), (2,2)
+        int[][] centerCells = {{1, 1}, {1, 2}, {2, 1}, {2, 2}};
+        java.util.ArrayList<int[]> emptyCenters = new java.util.ArrayList<>();
+        for (int[] cell : centerCells) {
+            if (board[cell[0]][cell[1]].equals("")) {
+                emptyCenters.add(cell);
+            }
+        }
+        if (!emptyCenters.isEmpty()) {
+            int randomIndex = new java.util.Random().nextInt(emptyCenters.size());
+            return emptyCenters.get(randomIndex);
+        }
+
+        // Ưu tiên 4: Đánh bừa vào các ô rìa còn lại
+        return getRandomMove();
+    }
+
+    // Hàm bổ trợ: Giả lập đánh thử một ô xem người chơi đó có chiến thắng lập tức không
+    private int[] findWinningMove(String player) {
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                if (board[i][j].equals("")) {
+                    // Đánh thử ngầm vào bộ nhớ tạm
+                    board[i][j] = player;
+                    // Kiểm tra xem nước này có kích hoạt điều kiện thắng không
+                    boolean isWin = checkWin(player);
+                    // Reset trả lại trạng thái trống sau khi tính toán xong
+                    board[i][j] = "";
+
+                    if (isWin) {
+                        return new int[]{i, j}; // Trả về tọa độ điểm vàng này
+                    }
+                }
+            }
+        }
+        return null;
+    }
 }

@@ -26,42 +26,57 @@
         android:columnCount="4"
         android:rowCount="4"
         android:background="#CCCCCC"
-        android:padding="4dp"
-        app:layout_bottom_toTopOf="@id/btnReset"
+        android:padding="2dp"
+        app:layout_constraintBottom_toTopOf="@id/layoutActions"
         app:layout_constraintTop_toBottomOf="@id/tvTurnStatus"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <Button android:id="@+id/btn_0_0" android:layout_width="75dp" android:layout_height="75dp" android:text="" android:layout_margin="2dp" tools:ignore="SpeakableTextPresentCheck" />
-        <Button android:id="@+id/btn_0_1" android:layout_width="75dp" android:layout_height="75dp" android:text="" android:layout_margin="2dp" tools:ignore="SpeakableTextPresentCheck" />
-        <Button android:id="@+id/btn_0_2" android:layout_width="75dp" android:layout_height="75dp" android:text="" android:layout_margin="2dp" tools:ignore="SpeakableTextPresentCheck" />
-        <Button android:id="@+id/btn_0_3" android:layout_width="75dp" android:layout_height="75dp" android:text="" android:layout_margin="2dp" tools:ignore="SpeakableTextPresentCheck" />
+        <androidx.appcompat.widget.AppCompatButton android:id="@+id/btn_0_0" android:layout_width="75dp" android:layout_height="75dp" android:text="" android:textSize="32sp" android:textStyle="bold" android:background="@drawable/cell_background" android:layout_margin="1dp" tools:ignore="SpeakableTextPresentCheck" />
+        <androidx.appcompat.widget.AppCompatButton android:id="@+id/btn_0_1" android:layout_width="75dp" android:layout_height="75dp" android:text="" android:textSize="32sp" android:textStyle="bold" android:background="@drawable/cell_background" android:layout_margin="1dp" tools:ignore="SpeakableTextPresentCheck" />
+        <androidx.appcompat.widget.AppCompatButton android:id="@+id/btn_0_2" android:layout_width="75dp" android:layout_height="75dp" android:text="" android:textSize="32sp" android:textStyle="bold" android:background="@drawable/cell_background" android:layout_margin="1dp" tools:ignore="SpeakableTextPresentCheck" />
+        <androidx.appcompat.widget.AppCompatButton android:id="@+id/btn_0_3" android:layout_width="75dp" android:layout_height="75dp" android:text="" android:textSize="32sp" android:textStyle="bold" android:background="@drawable/cell_background" android:layout_margin="1dp" tools:ignore="SpeakableTextPresentCheck" />
 
-        <Button android:id="@+id/btn_1_0" android:layout_width="75dp" android:layout_height="75dp" android:text="" android:layout_margin="2dp" tools:ignore="SpeakableTextPresentCheck" />
-        <Button android:id="@+id/btn_1_1" android:layout_width="75dp" android:layout_height="75dp" android:text="" android:layout_margin="2dp" tools:ignore="SpeakableTextPresentCheck" />
-        <Button android:id="@+id/btn_1_2" android:layout_width="75dp" android:layout_height="75dp" android:text="" android:layout_margin="2dp" tools:ignore="SpeakableTextPresentCheck" />
-        <Button android:id="@+id/btn_1_3" android:layout_width="75dp" android:layout_height="75dp" android:text="" android:layout_margin="2dp" tools:ignore="SpeakableTextPresentCheck" />
+        <androidx.appcompat.widget.AppCompatButton android:id="@+id/btn_1_0" android:layout_width="75dp" android:layout_height="75dp" android:text="" android:textSize="32sp" android:textStyle="bold" android:background="@drawable/cell_background" android:layout_margin="1dp" tools:ignore="SpeakableTextPresentCheck" />
+        <androidx.appcompat.widget.AppCompatButton android:id="@+id/btn_1_1" android:layout_width="75dp" android:layout_height="75dp" android:text="" android:textSize="32sp" android:textStyle="bold" android:background="@drawable/cell_background" android:layout_margin="1dp" tools:ignore="SpeakableTextPresentCheck" />
+        <androidx.appcompat.widget.AppCompatButton android:id="@+id/btn_1_2" android:layout_width="75dp" android:layout_height="75dp" android:text="" android:textSize="32sp" android:textStyle="bold" android:background="@drawable/cell_background" android:layout_margin="1dp" tools:ignore="SpeakableTextPresentCheck" />
+        <androidx.appcompat.widget.AppCompatButton android:id="@+id/btn_1_3" android:layout_width="75dp" android:layout_height="75dp" android:text="" android:textSize="32sp" android:textStyle="bold" android:background="@drawable/cell_background" android:layout_margin="1dp" tools:ignore="SpeakableTextPresentCheck" />
 
-        <Button android:id="@+id/btn_2_0" android:layout_width="75dp" android:layout_height="75dp" android:text="" android:layout_margin="2dp" tools:ignore="SpeakableTextPresentCheck" />
-        <Button android:id="@+id/btn_2_1" android:layout_width="75dp" android:layout_height="75dp" android:text="" android:layout_margin="2dp" tools:ignore="SpeakableTextPresentCheck" />
-        <Button android:id="@+id/btn_2_2" android:layout_width="75dp" android:layout_height="75dp" android:text="" android:layout_margin="2dp" tools:ignore="SpeakableTextPresentCheck" />
-        <Button android:id="@+id/btn_2_3" android:layout_width="75dp" android:layout_height="75dp" android:text="" android:layout_margin="2dp" tools:ignore="SpeakableTextPresentCheck" />
+        <androidx.appcompat.widget.AppCompatButton android:id="@+id/btn_2_0" android:layout_width="75dp" android:layout_height="75dp" android:text="" android:textSize="32sp" android:textStyle="bold" android:background="@drawable/cell_background" android:layout_margin="1dp" tools:ignore="SpeakableTextPresentCheck" />
+        <androidx.appcompat.widget.AppCompatButton android:id="@+id/btn_2_1" android:layout_width="75dp" android:layout_height="75dp" android:text="" android:textSize="32sp" android:textStyle="bold" android:background="@drawable/cell_background" android:layout_margin="1dp" tools:ignore="SpeakableTextPresentCheck" />
+        <androidx.appcompat.widget.AppCompatButton android:id="@+id/btn_2_2" android:layout_width="75dp" android:layout_height="75dp" android:text="" android:textSize="32sp" android:textStyle="bold" android:background="@drawable/cell_background" android:layout_margin="1dp" tools:ignore="SpeakableTextPresentCheck" />
+        <androidx.appcompat.widget.AppCompatButton android:id="@+id/btn_2_3" android:layout_width="75dp" android:layout_height="75dp" android:text="" android:textSize="32sp" android:textStyle="bold" android:background="@drawable/cell_background" android:layout_margin="1dp" tools:ignore="SpeakableTextPresentCheck" />
 
-        <Button android:id="@+id/btn_3_0" android:layout_width="75dp" android:layout_height="75dp" android:text="" android:layout_margin="2dp" tools:ignore="SpeakableTextPresentCheck" />
-        <Button android:id="@+id/btn_3_1" android:layout_width="75dp" android:layout_height="75dp" android:text="" android:layout_margin="2dp" tools:ignore="SpeakableTextPresentCheck" />
-        <Button android:id="@+id/btn_3_2" android:layout_width="75dp" android:layout_height="75dp" android:text="" android:layout_margin="2dp" tools:ignore="SpeakableTextPresentCheck" />
-        <Button android:id="@+id/btn_3_3" android:layout_width="75dp" android:layout_height="75dp" android:text="" android:layout_margin="2dp" tools:ignore="SpeakableTextPresentCheck" />
+        <androidx.appcompat.widget.AppCompatButton android:id="@+id/btn_3_0" android:layout_width="75dp" android:layout_height="75dp" android:text="" android:textSize="32sp" android:textStyle="bold" android:background="@drawable/cell_background" android:layout_margin="1dp" tools:ignore="SpeakableTextPresentCheck" />
+        <androidx.appcompat.widget.AppCompatButton android:id="@+id/btn_3_1" android:layout_width="75dp" android:layout_height="75dp" android:text="" android:textSize="32sp" android:textStyle="bold" android:background="@drawable/cell_background" android:layout_margin="1dp" tools:ignore="SpeakableTextPresentCheck" />
+        <androidx.appcompat.widget.AppCompatButton android:id="@+id/btn_3_2" android:layout_width="75dp" android:layout_height="75dp" android:text="" android:textSize="32sp" android:textStyle="bold" android:background="@drawable/cell_background" android:layout_margin="1dp" tools:ignore="SpeakableTextPresentCheck" />
+        <androidx.appcompat.widget.AppCompatButton android:id="@+id/btn_3_3" android:layout_width="75dp" android:layout_height="75dp" android:text="" android:textSize="32sp" android:textStyle="bold" android:background="@drawable/cell_background" android:layout_margin="1dp" tools:ignore="SpeakableTextPresentCheck" />
 
     </GridLayout>
 
-    <Button
-        android:id="@+id/btnReset"
+    <LinearLayout
+        android:id="@+id/layoutActions"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
         android:layout_marginBottom="100dp"
-        android:text="Chơi lại"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent">
+
+        <Button
+            android:id="@+id/btnReset"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:text="Chơi lại" />
+
+        <Button
+            android:id="@+id/btnBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Trở về" />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
