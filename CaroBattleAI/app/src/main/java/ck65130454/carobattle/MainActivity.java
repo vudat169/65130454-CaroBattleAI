@@ -34,12 +34,12 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        // THÊM MỚI: Tự động khởi tạo và phát nhạc ngay khi vừa mở Màn hình chính
+        // THÊM MỚI: Tự động khởi tạo và phát nhạc ngay khi vừa mở Màn hình chí
         if (bgMediaPlayer == null) {
             bgMediaPlayer = MediaPlayer.create(this, R.raw.bg_music);
             if (bgMediaPlayer != null) {
                 bgMediaPlayer.setLooping(true); // Phát lặp lại liên tục
-                bgMediaPlayer.setVolume(0.4f, 0.4f); // Âm lượng 40% êm dịu
+                bgMediaPlayer.setVolume(0.8f, 0.8f); // Âm lượng 80% êm dịu
                 bgMediaPlayer.start();
             }
         }
