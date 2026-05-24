@@ -3,6 +3,7 @@ package ck65130454.carobattle;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.LayoutInflater; // THÊM MỚI: Thư viện nạp layout custom
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -186,11 +187,11 @@ public class GameActivity extends AppCompatActivity {
             if (coin == 0) {
                 currentStringPlayer = "X";
                 tvTurnStatus.setText("Lượt của: " + playerXName + " (X)");
-                Toast.makeText(this, "Ngẫu nhiên: " + playerXName + " đi trước!", Toast.LENGTH_SHORT).show();
+                showCustomToast("Ngẫu nhiên: " + playerXName + " đi trước!"); // Đã sửa sang Custom Toast
             } else {
                 currentStringPlayer = "O";
                 tvTurnStatus.setText("Lượt của: " + playerOName + " (O)");
-                Toast.makeText(this, "Ngẫu nhiên: " + playerOName + " đi trước!", Toast.LENGTH_SHORT).show();
+                showCustomToast("Ngẫu nhiên: " + playerOName + " đi trước!"); // Đã sửa sang Custom Toast
             }
         } else {
             String diffText = "Dễ";
@@ -200,11 +201,11 @@ public class GameActivity extends AppCompatActivity {
             if (coin == 0) {
                 currentStringPlayer = "X";
                 tvTurnStatus.setText("Đấu với Máy (" + diffText + ") - Lượt của bạn (X)");
-                Toast.makeText(this, "Ngẫu nhiên: Bạn được đi trước!", Toast.LENGTH_SHORT).show();
+                showCustomToast("Ngẫu nhiên: Bạn được đi trước!"); // Đã sửa sang Custom Toast
             } else {
                 currentStringPlayer = "O";
                 tvTurnStatus.setText("Máy đang suy nghĩ...");
-                Toast.makeText(this, "Ngẫu nhiên: Máy được đi trước!", Toast.LENGTH_SHORT).show();
+                showCustomToast("Ngẫu nhiên: Máy được đi trước!"); // Đã sửa sang Custom Toast
                 botMakeMove();
             }
         }
@@ -225,7 +226,7 @@ public class GameActivity extends AppCompatActivity {
 
             if (gameEngine.checkWin("O")) {
                 tvTurnStatus.setText("MÁY ĐÃ CHIẾN THẮNG!");
-                Toast.makeText(this, "Rất tiếc! Máy đã thắng bạn.", Toast.LENGTH_LONG).show();
+                showCustomToast("Rất tiếc! Máy đã thắng bạn."); // Đã sửa sang Custom Toast
                 isGameActive = false;
 
                 // THÊM MỚI: Lưu trận thua vào lịch sử đám mây
@@ -235,7 +236,7 @@ public class GameActivity extends AppCompatActivity {
 
             if (gameEngine.isBoardFull()) {
                 tvTurnStatus.setText("TRẬN ĐẤU HÒA!");
-                Toast.makeText(this, "Kết quả hòa với Máy.", Toast.LENGTH_LONG).show();
+                showCustomToast("Kết quả hòa với Máy."); // Đã sửa sang Custom Toast
                 isGameActive = false;
 
                 // THÊM MỚI: Lưu trận hòa vào lịch sử đám mây
@@ -269,14 +270,14 @@ public class GameActivity extends AppCompatActivity {
             if (gameEngine.checkWin(currentStringPlayer)) {
                 String winnerName = currentStringPlayer.equals("X") ? playerXName : playerOName;
                 tvTurnStatus.setText(winnerName.toUpperCase() + " CHIẾN THẮNG!");
-                Toast.makeText(this, "Chúc mừng " + winnerName + "!", Toast.LENGTH_LONG).show();
+                showCustomToast("Chúc mừng " + winnerName + "!"); // Đã sửa sang Custom Toast
                 isGameActive = false;
 
                 // THÊM MỚI: Lưu trận PvP thắng vào lịch sử đám mây
                 saveMatchHistory("Đấu với Người", winnerName + " Thắng");
             } else if (gameEngine.isBoardFull()) {
                 tvTurnStatus.setText("TRẬN ĐẤU HÒA!");
-                Toast.makeText(this, "Bàn cờ đã đầy! Kết quả hòa.", Toast.LENGTH_LONG).show();
+                showCustomToast("Bàn cờ đã đầy! Kết quả hòa."); // Đã sửa sang Custom Toast
                 isGameActive = false;
 
                 // THÊM MỚI: Lưu trận PvP hòa vào lịch sử đám mây
@@ -299,7 +300,7 @@ public class GameActivity extends AppCompatActivity {
 
             if (gameEngine.checkWin("X")) {
                 tvTurnStatus.setText("BẠN ĐÃ CHIẾN THẮNG MÁY!");
-                Toast.makeText(this, "Chúc mừng bạn đã thắng Máy!", Toast.LENGTH_LONG).show();
+                showCustomToast("Chúc mừng bạn đã thắng Máy!"); // Đã sửa sang Custom Toast
                 isGameActive = false;
 
                 // THÊM MỚI: Lưu trận thắng Máy vào lịch sử đám mây
@@ -309,7 +310,7 @@ public class GameActivity extends AppCompatActivity {
 
             if (gameEngine.isBoardFull()) {
                 tvTurnStatus.setText("TRẬN ĐẤU HÒA!");
-                Toast.makeText(this, "Kết quả hòa với Máy.", Toast.LENGTH_LONG).show();
+                showCustomToast("Kết quả hòa với Máy."); // Đã sửa sang Custom Toast
                 isGameActive = false;
 
                 // THÊM MỚI: Lưu trận hòa Máy vào lịch sử đám mây
@@ -325,19 +326,14 @@ public class GameActivity extends AppCompatActivity {
 
     // THÊM MỚI: Hàm xử lý thu thập thông tin và đẩy dữ liệu trực tiếp lên Firebase Realtime Database
     private void saveMatchHistory(String mode, String matchResult) {
-        // 1. Tạo id ngẫu nhiên duy nhất cho mỗi trận đấu thông qua Firebase push key
         String id = databaseReference.push().getKey();
         if (id == null) return;
 
-        // 2. Định dạng lấy chuỗi Ngày và chuỗi Giờ thực tế từ điện thoại người dùng
         String currentDate = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
         String currentTime = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
-        long timestamp = System.currentTimeMillis(); // Dùng để thuật toán sắp xếp thứ tự trận mới lên đầu
+        long timestamp = System.currentTimeMillis();
 
-        // 3. Đóng gói thông tin trận đấu vào object cấu trúc dữ liệu GameHistory mà bạn vừa tạo thành công
         GameHistory history = new GameHistory(id, mode, matchResult, currentDate, currentTime, timestamp);
-
-        // 4. Đẩy thẳng dữ liệu lên nhánh Firebase đám mây
         databaseReference.child(id).setValue(history);
     }
 
@@ -351,5 +347,28 @@ public class GameActivity extends AppCompatActivity {
             }
         }
         determineFirstTurnRandomly();
+    }
+
+    // =========================================================================
+    // CẬP NHẬT: Hàm Custom Toast to hơn và tự động căn ra CHÍNH GIỮA màn hình
+    // =========================================================================
+    private void showCustomToast(String message) {
+        LayoutInflater inflater = getLayoutInflater();
+        // Nạp file custom_toast_layout vào code Java
+        View layout = inflater.inflate(R.layout.custom_toast_layout, findViewById(R.id.main), false);
+
+        // Ánh xạ và gán nội dung text cho TextView bên trong layout custom
+        TextView text = layout.findViewById(R.id.tvToastText);
+        text.setText(message);
+
+        // Tạo đối tượng Toast và gán cấu hình hiển thị lên màn hình
+        Toast toast = new Toast(getApplicationContext());
+        toast.setDuration(Toast.LENGTH_SHORT);
+        toast.setView(layout);
+
+        // THÊM MỚI: Đẩy thông báo ra chính giữa màn hình (Trục X = 0, Trục Y = 0)
+        toast.setGravity(android.view.Gravity.CENTER, 0, 0);
+
+        toast.show();
     }
 }

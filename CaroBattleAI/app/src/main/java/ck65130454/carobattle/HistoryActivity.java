@@ -5,7 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
+import androidx.appcompat.widget.AppCompatButton; // Đổi sang AppCompatButton để đồng bộ giao diện bo góc
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,7 +29,7 @@ import java.util.Collections;
 public class HistoryActivity extends AppCompatActivity {
 
     private ListView lvHistory;
-    private Button btnBackToMain;
+    private AppCompatButton btnBackToMain; // Đã sửa đổi từ Button thành AppCompatButton theo giao diện mới
 
     private DatabaseReference databaseReference;
     private ArrayList<GameHistory> historyList;
@@ -75,12 +75,15 @@ public class HistoryActivity extends AppCompatActivity {
                     // Dòng 1: Hiển thị Chế độ chơi và Kết quả trận đấu
                     text1.setText("🎮 " + currentItem.gameMode + " ➜ " + currentItem.result);
                     text1.setTextSize(16);
-                    text1.setTextColor(android.graphics.Color.parseColor("#333333"));
+                    // ĐỔI MỚI: Chuyển màu chữ thành Trắng tinh khôi để nổi bật trên nền Gradient tối
+                    text1.setTextColor(android.graphics.Color.WHITE);
+                    text1.setTypeface(null, android.graphics.Typeface.BOLD); // Làm đậm dòng 1 nhìn cho chất
 
                     // Dòng 2: Hiển thị thông tin Ngày tháng và Thời gian diễn ra trận đấu
                     text2.setText("📅 " + currentItem.date + "   ⏱ " + currentItem.time);
                     text2.setTextSize(13);
-                    text2.setTextColor(android.graphics.Color.GRAY);
+                    // ĐỔI MỚI: Chuyển màu chữ thành Xám Sáng (Light Gray) giúp phân cấp thông tin rõ ràng, dễ nhìn
+                    text2.setTextColor(android.graphics.Color.parseColor("#E0E0E0"));
                 }
 
                 return convertView;
