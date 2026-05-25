@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="320dp"
+    android:layout_height="wrap_content"
+    android:background="@drawable/menu_container_bg"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="24dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="CHỌN ĐỘ KHÓ CỦA MÁY"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:letterSpacing="0.05"
+        android:layout_marginBottom="24dp"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnEasy"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:background="@drawable/custom_toast_bg"
+        android:text="🟢   Dễ (Easy)"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:gravity="center_vertical|left"
+        android:paddingStart="24dp"
+        android:layout_marginBottom="12dp"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnMedium"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:background="@drawable/custom_toast_bg"
+        android:text="🟡   Bình thường (Medium)"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:gravity="center_vertical|left"
+        android:paddingStart="24dp"
+        android:layout_marginBottom="12dp"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnHard"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:background="@drawable/custom_toast_bg"
+        android:text="🔴   Khó (Hard)"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:gravity="center_vertical|left"
+        android:paddingStart="24dp"/>
+
+</LinearLayout>

@@ -2,27 +2,28 @@ package ck65130454.carobattle;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable; // THÊM MỚI: Để xử lý làm trong suốt viền dialog mặc định
 import android.os.Bundle;
-import android.view.LayoutInflater; // THÊM MỚI: Thư viện nạp layout custom
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.activity.OnBackPressedCallback;
+import androidx.appcompat.app.AlertDialog; // ĐỔI MỚI: Dùng AlertDialog của AppCompat cho đồng bộ
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-// THÊM MỚI: Thư viện kết nối Firebase Realtime Database để ghi lịch sử
+// Thư viện kết nối Firebase Realtime Database để ghi lịch sử
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-// THÊM MỚI: Thư viện định dạng Ngày/Giờ hệ thống
+// Thư viện định dạng Ngày/Giờ hệ thống
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -46,7 +47,7 @@ public class GameActivity extends AppCompatActivity {
     private String playerOName = "Người chơi O";
     private boolean isChangingActivity = false;
 
-    // THÊM MỚI: Biến kết nối tới cơ sở dữ liệu Firebase
+    // Biến kết nối tới cơ sở dữ liệu Firebase
     private DatabaseReference databaseReference;
 
     @Override
@@ -63,7 +64,7 @@ public class GameActivity extends AppCompatActivity {
 
         gameEngine = new CaroEngine();
 
-        // THÊM MỚI: Khởi tạo kết nối tới node "History" trên Firebase
+        // Khởi tạo kết nối tới node "History" trên Firebase
         databaseReference = FirebaseDatabase.getInstance().getReference("History");
 
         if (getIntent() != null) {
@@ -187,11 +188,11 @@ public class GameActivity extends AppCompatActivity {
             if (coin == 0) {
                 currentStringPlayer = "X";
                 tvTurnStatus.setText("Lượt của: " + playerXName + " (X)");
-                showCustomToast("Ngẫu nhiên: " + playerXName + " đi trước!"); // Đã sửa sang Custom Toast
+                showGameDialog("🎲", "Ngẫu nhiên:\n" + playerXName + " đi trước!"); // Sửa thành Dialog
             } else {
                 currentStringPlayer = "O";
                 tvTurnStatus.setText("Lượt của: " + playerOName + " (O)");
-                showCustomToast("Ngẫu nhiên: " + playerOName + " đi trước!"); // Đã sửa sang Custom Toast
+                showGameDialog("🎲", "Ngẫu nhiên:\n" + playerOName + " đi trước!"); // Sửa thành Dialog
             }
         } else {
             String diffText = "Dễ";
@@ -201,11 +202,11 @@ public class GameActivity extends AppCompatActivity {
             if (coin == 0) {
                 currentStringPlayer = "X";
                 tvTurnStatus.setText("Đấu với Máy (" + diffText + ") - Lượt của bạn (X)");
-                showCustomToast("Ngẫu nhiên: Bạn được đi trước!"); // Đã sửa sang Custom Toast
+                showGameDialog("🎲", "Ngẫu nhiên:\nBạn được đi trước!"); // Sửa thành Dialog
             } else {
                 currentStringPlayer = "O";
                 tvTurnStatus.setText("Máy đang suy nghĩ...");
-                showCustomToast("Ngẫu nhiên: Máy được đi trước!"); // Đã sửa sang Custom Toast
+                showGameDialog("🤖", "Ngẫu nhiên:\nMáy được đi trước!"); // Sửa thành Dialog
                 botMakeMove();
             }
         }
@@ -226,20 +227,20 @@ public class GameActivity extends AppCompatActivity {
 
             if (gameEngine.checkWin("O")) {
                 tvTurnStatus.setText("MÁY ĐÃ CHIẾN THẮNG!");
-                showCustomToast("Rất tiếc! Máy đã thắng bạn."); // Đã sửa sang Custom Toast
+                showGameDialog("😭", "Rất tiếc!\nMáy đã thắng bạn."); // Sửa thành Dialog
                 isGameActive = false;
 
-                // THÊM MỚI: Lưu trận thua vào lịch sử đám mây
+                // Lưu trận thua vào lịch sử đám mây
                 saveMatchHistory("Đấu với Máy", "Máy Thắng");
                 return;
             }
 
             if (gameEngine.isBoardFull()) {
                 tvTurnStatus.setText("TRẬN ĐẤU HÒA!");
-                showCustomToast("Kết quả hòa với Máy."); // Đã sửa sang Custom Toast
+                showGameDialog("🤝", "Kết quả hòa với Máy."); // Sửa thành Dialog
                 isGameActive = false;
 
-                // THÊM MỚI: Lưu trận hòa vào lịch sử đám mây
+                // Lưu trận hòa vào lịch sử đám mây
                 saveMatchHistory("Đấu với Máy", "Hòa");
                 return;
             }
@@ -270,17 +271,17 @@ public class GameActivity extends AppCompatActivity {
             if (gameEngine.checkWin(currentStringPlayer)) {
                 String winnerName = currentStringPlayer.equals("X") ? playerXName : playerOName;
                 tvTurnStatus.setText(winnerName.toUpperCase() + " CHIẾN THẮNG!");
-                showCustomToast("Chúc mừng " + winnerName + "!"); // Đã sửa sang Custom Toast
+                showGameDialog("👑", "Chúc mừng!\n" + winnerName + " đã chiến thắng!"); // Sửa thành Dialog
                 isGameActive = false;
 
-                // THÊM MỚI: Lưu trận PvP thắng vào lịch sử đám mây
+                // Lưu trận PvP thắng vào lịch sử đám mây
                 saveMatchHistory("Đấu với Người", winnerName + " Thắng");
             } else if (gameEngine.isBoardFull()) {
                 tvTurnStatus.setText("TRẬN ĐẤU HÒA!");
-                showCustomToast("Bàn cờ đã đầy! Kết quả hòa."); // Đã sửa sang Custom Toast
+                showGameDialog("🤝", "Bàn cờ đã đầy!\nKết quả hòa."); // Sửa thành Dialog
                 isGameActive = false;
 
-                // THÊM MỚI: Lưu trận PvP hòa vào lịch sử đám mây
+                // Lưu trận PvP hòa vào lịch sử đám mây
                 saveMatchHistory("Đấu với Người", "Hòa");
             } else {
                 currentStringPlayer = currentStringPlayer.equals("X") ? "O" : "X";
@@ -300,20 +301,20 @@ public class GameActivity extends AppCompatActivity {
 
             if (gameEngine.checkWin("X")) {
                 tvTurnStatus.setText("BẠN ĐÃ CHIẾN THẮNG MÁY!");
-                showCustomToast("Chúc mừng bạn đã thắng Máy!"); // Đã sửa sang Custom Toast
+                showGameDialog("🎉", "Chúc mừng!\nBạn đã thắng Máy!"); // Sửa thành Dialog
                 isGameActive = false;
 
-                // THÊM MỚI: Lưu trận thắng Máy vào lịch sử đám mây
+                // Lưu trận thắng Máy vào lịch sử đám mây
                 saveMatchHistory("Đấu với Máy", "Bạn Thắng");
                 return;
             }
 
             if (gameEngine.isBoardFull()) {
                 tvTurnStatus.setText("TRẬN ĐẤU HÒA!");
-                showCustomToast("Kết quả hòa với Máy."); // Đã sửa sang Custom Toast
+                showGameDialog("🤝", "Kết quả hòa với Máy."); // Sửa thành Dialog
                 isGameActive = false;
 
-                // THÊM MỚI: Lưu trận hòa Máy vào lịch sử đám mây
+                // Lưu trận hòa Máy vào lịch sử đám mây
                 saveMatchHistory("Đấu với Máy", "Hòa");
                 return;
             }
@@ -324,7 +325,7 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
-    // THÊM MỚI: Hàm xử lý thu thập thông tin và đẩy dữ liệu trực tiếp lên Firebase Realtime Database
+    // Hàm xử lý thu thập thông tin và đẩy dữ liệu trực tiếp lên Firebase Realtime Database
     private void saveMatchHistory(String mode, String matchResult) {
         String id = databaseReference.push().getKey();
         if (id == null) return;
@@ -350,25 +351,39 @@ public class GameActivity extends AppCompatActivity {
     }
 
     // =========================================================================
-    // CẬP NHẬT: Hàm Custom Toast to hơn và tự động căn ra CHÍNH GIỮA màn hình
+    // NÂNG CẤP TOÀN DIỆN: Hàm khởi tạo Bảng thông báo Dialog Neon lớn giữa màn hình
     // =========================================================================
-    private void showCustomToast(String message) {
+    private void showGameDialog(String icon, String message) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(GameActivity.this);
         LayoutInflater inflater = getLayoutInflater();
-        // Nạp file custom_toast_layout vào code Java
-        View layout = inflater.inflate(R.layout.custom_toast_layout, findViewById(R.id.main), false);
+        View dialogView = inflater.inflate(R.layout.custom_dialog_layout, null);
+        builder.setView(dialogView);
+        builder.setCancelable(false); // Bắt buộc nhấn nút mới được tắt bảng
 
-        // Ánh xạ và gán nội dung text cho TextView bên trong layout custom
-        TextView text = layout.findViewById(R.id.tvToastText);
-        text.setText(message);
+        // Ánh xạ các thành phần từ file custom_dialog_layout.xml
+        TextView tvDialogIcon = dialogView.findViewById(R.id.tvDialogIcon);
+        TextView tvDialogMessage = dialogView.findViewById(R.id.tvDialogMessage);
+        Button btnDialogConfirm = dialogView.findViewById(R.id.btnDialogConfirm);
 
-        // Tạo đối tượng Toast và gán cấu hình hiển thị lên màn hình
-        Toast toast = new Toast(getApplicationContext());
-        toast.setDuration(Toast.LENGTH_SHORT);
-        toast.setView(layout);
+        // Nạp nội dung chữ và icon tương ứng vào bảng
+        tvDialogIcon.setText(icon);
+        tvDialogMessage.setText(message);
 
-        // THÊM MỚI: Đẩy thông báo ra chính giữa màn hình (Trục X = 0, Trục Y = 0)
-        toast.setGravity(android.view.Gravity.CENTER, 0, 0);
+        final AlertDialog alertDialog = builder.create();
 
-        toast.show();
+        // Xử lý sự kiện click vào nút Xác Nhận -> Đóng bảng thông báo
+        btnDialogConfirm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                alertDialog.dismiss();
+            }
+        });
+
+        // ĐÃ FIX: Làm trong suốt viền đen bọc ngoài mặc định để hiển thị bo góc mượt mà
+        if (alertDialog.getWindow() != null) {
+            alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        }
+
+        alertDialog.show();
     }
 }

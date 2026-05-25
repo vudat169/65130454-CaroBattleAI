@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="320dp"
+    android:layout_height="wrap_content"
+    android:background="@drawable/menu_container_bg"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="24dp">
+
+    <TextView
+        android:id="@+id/tvDialogIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="👑"
+        android:textSize="55sp"
+        android:layout_marginBottom="16dp"/>
+
+    <TextView
+        android:id="@+id/tvDialogMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Thông báo nội dung trận đấu"
+        android:textColor="#FFFFFF"
+        android:textSize="19sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:layout_marginBottom="24dp"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnDialogConfirm"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:background="@drawable/btn_pve_bg"
+        android:text="XÁC NHẬN"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        android:textStyle="bold"/>
+</LinearLayout>
