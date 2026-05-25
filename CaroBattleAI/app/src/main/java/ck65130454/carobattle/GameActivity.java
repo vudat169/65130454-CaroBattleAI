@@ -4,11 +4,13 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable; // Xử lý làm trong suốt viền dialog mặc định
 import android.os.Bundle;
+import android.os.CountDownTimer; // Thư viện đếm ngược thời gian
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar; // Quản lý thanh thời gian
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -25,7 +27,9 @@ import com.google.firebase.database.FirebaseDatabase;
 
 // Thư viện định dạng Ngày/Giờ hệ thống
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 
@@ -38,6 +42,11 @@ public class GameActivity extends AppCompatActivity {
     private Button btnReset;
     private Button btnBack;
 
+    // Quản lý luồng thời gian
+    private ProgressBar pbTimer;
+    private TextView tvTimerCountdown;
+    private CountDownTimer countDownTimer;
+
     private String currentStringPlayer = "X";
     private boolean isGameActive = true;
     private String gameMode = "pvp";
@@ -46,6 +55,11 @@ public class GameActivity extends AppCompatActivity {
     private String playerXName = "Người chơi X";
     private String playerOName = "Người chơi O";
     private boolean isChangingActivity = false;
+
+    private boolean isNameInputDone = false;
+
+    // ĐÃ THÊM: Biến kiểm tra xem người chơi đã bấm "Xác nhận" đóng Dialog tung xúc xắc đầu trận chưa
+    private boolean isFirstTurnDialogOpen = false;
 
     // Biến kết nối tới cơ sở dữ liệu Firebase
     private DatabaseReference databaseReference;
@@ -80,6 +94,16 @@ public class GameActivity extends AppCompatActivity {
         btnReset = findViewById(R.id.btnReset);
         btnBack = findViewById(R.id.btnBack);
 
+        // Ánh xạ các thành phần đếm ngược thời gian
+        pbTimer = findViewById(R.id.pbTimer);
+        tvTimerCountdown = findViewById(R.id.tvTimerCountdown);
+
+        // Đặt thanh thời gian và số giây ở trạng thái tĩnh ban đầu
+        pbTimer.setMax(30);
+        pbTimer.setProgress(30);
+        tvTimerCountdown.setText("30s");
+        tvTimerCountdown.setTextColor(Color.parseColor("#FFCC00")); // Màu vàng chờ mặc định
+
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
                 String buttonID = "btn_" + i + "_" + j;
@@ -99,8 +123,10 @@ public class GameActivity extends AppCompatActivity {
         }
 
         if (gameMode.equals("pvp")) {
+            isNameInputDone = false;
             showNameInputDialog();
         } else {
+            isNameInputDone = true;
             determineFirstTurnRandomly();
         }
 
@@ -114,6 +140,7 @@ public class GameActivity extends AppCompatActivity {
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                cancelTimer();
                 isChangingActivity = true;
                 finish();
             }
@@ -122,6 +149,7 @@ public class GameActivity extends AppCompatActivity {
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
+                cancelTimer();
                 isChangingActivity = true;
                 finish();
             }
@@ -131,6 +159,7 @@ public class GameActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+        cancelTimer();
         if (!isChangingActivity && MainActivity.bgMediaPlayer != null && MainActivity.bgMediaPlayer.isPlaying()) {
             MainActivity.bgMediaPlayer.pause();
         }
@@ -143,41 +172,107 @@ public class GameActivity extends AppCompatActivity {
         if (MainActivity.bgMediaPlayer != null && !MainActivity.bgMediaPlayer.isPlaying()) {
             MainActivity.bgMediaPlayer.start();
         }
+
+        // Chỉ chạy lại thời gian nếu game đang chạy, đã nhập tên xong và KHÔNG bị kẹt ở Dialog mở đầu
+        if (isGameActive && isNameInputDone && !isFirstTurnDialogOpen) {
+            if (gameMode.equals("pvp") || currentStringPlayer.equals("X")) {
+                startTurnTimer();
+            }
+        }
     }
 
     // =========================================================================
-    // ĐÃ SỬA: Bắt buộc nhập tên, hiển thị thông báo lỗi mang phong cách game đối kháng
+    // Điều khiển đếm ngược 30 giây & đồng bộ đổi màu chữ/thanh đo
     // =========================================================================
+    private void startTurnTimer() {
+        cancelTimer();
+
+        // Nếu game kết thúc, chưa nhập tên, hoặc đang hiện Dialog mở màn -> CHẶN không cho đếm giờ
+        if (!isGameActive || !isNameInputDone || isFirstTurnDialogOpen) return;
+
+        if (currentStringPlayer.equals("X")) {
+            pbTimer.setProgressTintList(android.content.res.ColorStateList.valueOf(Color.parseColor("#EB0F0F")));
+            tvTimerCountdown.setTextColor(Color.parseColor("#EB0F0F"));
+        } else {
+            pbTimer.setProgressTintList(android.content.res.ColorStateList.valueOf(Color.parseColor("#1A65E4")));
+            tvTimerCountdown.setTextColor(Color.parseColor("#1A65E4"));
+        }
+
+        pbTimer.setMax(30);
+        pbTimer.setProgress(30);
+        tvTimerCountdown.setText("30s");
+
+        countDownTimer = new CountDownTimer(30000, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                int secondsLeft = (int) (millisUntilFinished / 1000);
+                pbTimer.setProgress(secondsLeft);
+                tvTimerCountdown.setText(secondsLeft + "s");
+            }
+
+            @Override
+            public void onFinish() {
+                pbTimer.setProgress(0);
+                tvTimerCountdown.setText("0s");
+
+                if (isGameActive) {
+                    makeRandomMoveForPlayer();
+                }
+            }
+        }.start();
+    }
+
+    private void cancelTimer() {
+        if (countDownTimer != null) {
+            countDownTimer.cancel();
+        }
+    }
+
+    // Thuật toán quét ô trống và hạ bài tự động khi hết thời gian
+    private void makeRandomMoveForPlayer() {
+        List<int[]> emptyCells = new ArrayList<>();
+
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                if (gameEngine.isCellEmpty(i, j)) {
+                    emptyCells.add(new int[]{i, j});
+                }
+            }
+        }
+
+        if (!emptyCells.isEmpty()) {
+            Random random = new Random();
+            int[] luckyCell = emptyCells.get(random.nextInt(emptyCells.size()));
+            int row = luckyCell[0];
+            int col = luckyCell[1];
+
+            onCellClicked(row, col);
+        }
+    }
+
     private void showNameInputDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = getLayoutInflater();
 
-        // Nạp file layout custom mới tinh của bạn vào đây
         View dialogView = inflater.inflate(R.layout.dialog_name_input_layout, null);
         builder.setView(dialogView);
-        builder.setCancelable(false); // Bắt buộc người chơi thao tác trên bảng mới được vào game
+        builder.setCancelable(false);
 
         final AlertDialog alertDialog = builder.create();
 
-        // Ánh xạ chính xác các ID từ file dialog_name_input_layout.xml của bạn
         final EditText etPlayerX = dialogView.findViewById(R.id.etPlayerX);
         final EditText etPlayerO = dialogView.findViewById(R.id.etPlayerO);
-        final TextView tvErrorMessage = dialogView.findViewById(R.id.tvErrorMessage); // Ánh xạ TextView báo lỗi
+        final TextView tvErrorMessage = dialogView.findViewById(R.id.tvErrorMessage);
         Button btnStartGame = dialogView.findViewById(R.id.btnStartGame);
 
-        // Bắt sự kiện khi nhấn nút "BẮT ĐẦU CHIẾN"
         btnStartGame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String nameX = etPlayerX.getText().toString().trim();
                 String nameO = etPlayerO.getText().toString().trim();
 
-                // KIỂM TRA ĐẦU VÀO: Nếu một trong hai hoặc cả hai ô trống tên
                 if (nameX.isEmpty() || nameO.isEmpty()) {
-                    // Kích hoạt hiển thị TextView thông báo lỗi
                     tvErrorMessage.setVisibility(View.VISIBLE);
-
-                    // Cập nhật thông tin cảnh báo phù hợp với từng ngữ cảnh
                     if (nameX.isEmpty() && nameO.isEmpty()) {
                         tvErrorMessage.setText("⚠️ CẢ HAI NGƯỜI CHƠI CHƯA GHI TÊN !");
                     } else if (nameX.isEmpty()) {
@@ -185,20 +280,18 @@ public class GameActivity extends AppCompatActivity {
                     } else {
                         tvErrorMessage.setText("⚠️ O CHƯA KHAI BÁO DANH TÍNH !");
                     }
-                    return; // Chặn đứng luồng xử lý, không cho đóng bảng hay vào game
+                    return;
                 }
 
-                // Nếu đã điền đủ thông tin, gán vào các biến toàn cục
                 playerXName = nameX;
                 playerOName = nameO;
+                isNameInputDone = true;
 
-                // Tắt bảng nhập tên và gọi hàm random lượt đi ngay lập tức
                 alertDialog.dismiss();
                 determineFirstTurnRandomly();
             }
         });
 
-        // Xóa bỏ khung nền xám vuông mặc định giúp bo góc tuyệt đẹp theo tệp XML custom
         if (alertDialog.getWindow() != null) {
             alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         }
@@ -206,9 +299,15 @@ public class GameActivity extends AppCompatActivity {
         alertDialog.show();
     }
 
+    // =========================================================================
+    // ĐÃ SỬA: Cả PvP và PvE khi tung đồng xu xong đều bị Khóa thời gian chờ bấm Xác nhận
+    // =========================================================================
     private void determineFirstTurnRandomly() {
         Random random = new Random();
         int coin = random.nextInt(2);
+
+        // Đánh dấu là đang mở Dialog bốc thăm khởi đầu -> Chặn đứng thời gian chạy ngầm
+        isFirstTurnDialogOpen = true;
 
         if (gameMode.equals("pvp")) {
             if (coin == 0) {
@@ -233,7 +332,6 @@ public class GameActivity extends AppCompatActivity {
                 currentStringPlayer = "O";
                 tvTurnStatus.setText("Máy đang suy nghĩ...");
                 showGameDialog("🤖", "Ngẫu nhiên:\nMáy được đi trước!");
-                botMakeMove();
             }
         }
     }
@@ -253,20 +351,18 @@ public class GameActivity extends AppCompatActivity {
 
             if (gameEngine.checkWin("O")) {
                 tvTurnStatus.setText("MÁY ĐÃ CHIẾN THẮNG!");
+                cancelTimer();
                 showGameDialog("😭", "Rất tiếc!\nMáy đã thắng bạn.");
                 isGameActive = false;
-
-                // Lưu trận thua vào lịch sử đám mây
                 saveMatchHistory("Đấu với Máy", "Máy Thắng");
                 return;
             }
 
             if (gameEngine.isBoardFull()) {
                 tvTurnStatus.setText("TRẬN ĐẤU HÒA!");
+                cancelTimer();
                 showGameDialog("🤝", "Kết quả hòa với Máy.");
                 isGameActive = false;
-
-                // Lưu trận hòa vào lịch sử đám mây
                 saveMatchHistory("Đấu với Máy", "Hòa");
                 return;
             }
@@ -274,6 +370,7 @@ public class GameActivity extends AppCompatActivity {
 
         currentStringPlayer = "X";
         tvTurnStatus.setText("Đến lượt bạn (X)");
+        startTurnTimer(); // Máy đi xong -> Trả quyền cho người và kích hoạt đếm ngược 30s
     }
 
     private void onCellClicked(int row, int col) {
@@ -281,9 +378,6 @@ public class GameActivity extends AppCompatActivity {
             return;
         }
 
-        // ==========================================
-        // LUỒNG 1: XỬ LÝ CHẾ ĐỘ ĐẤU VỚI NGƯỜI (PvP)
-        // ==========================================
         if (gameMode.equals("pvp")) {
             gameEngine.makeMove(row, col, currentStringPlayer);
             buttons[row][col].setText(currentStringPlayer);
@@ -297,28 +391,23 @@ public class GameActivity extends AppCompatActivity {
             if (gameEngine.checkWin(currentStringPlayer)) {
                 String winnerName = currentStringPlayer.equals("X") ? playerXName : playerOName;
                 tvTurnStatus.setText(winnerName.toUpperCase() + " CHIẾN THẮNG!");
+                cancelTimer();
                 showGameDialog("👑", "Chúc mừng!\n" + winnerName + " đã chiến thắng!");
                 isGameActive = false;
-
-                // Lưu trận PvP thắng vào lịch sử đám mây
                 saveMatchHistory("Đấu với Người", winnerName + " Thắng");
             } else if (gameEngine.isBoardFull()) {
                 tvTurnStatus.setText("TRẬN ĐẤU HÒA!");
+                cancelTimer();
                 showGameDialog("🤝", "Bàn cờ đã đầy!\nKết quả hòa.");
                 isGameActive = false;
-
-                // Lưu trận PvP hòa vào lịch sử đám mây
                 saveMatchHistory("Đấu với Người", "Hòa");
             } else {
                 currentStringPlayer = currentStringPlayer.equals("X") ? "O" : "X";
                 String nextPlayerName = currentStringPlayer.equals("X") ? playerXName : playerOName;
                 tvTurnStatus.setText("Lượt của: " + nextPlayerName + " (" + currentStringPlayer + ")");
+                startTurnTimer();
             }
-        }
-        // ==========================================
-        // LUỒNG 2: XỬ LÝ CHẾ ĐỘ ĐẤU VỚI MÁY (PvE)
-        // ==========================================
-        else {
+        } else {
             if (!currentStringPlayer.equals("X")) return;
 
             gameEngine.makeMove(row, col, "X");
@@ -327,31 +416,29 @@ public class GameActivity extends AppCompatActivity {
 
             if (gameEngine.checkWin("X")) {
                 tvTurnStatus.setText("BẠN ĐÃ CHIẾN THẮNG MÁY!");
+                cancelTimer();
                 showGameDialog("🎉", "Chúc mừng!\nBạn đã thắng Máy!");
                 isGameActive = false;
-
-                // Lưu trận thắng Máy vào lịch sử đám mây
                 saveMatchHistory("Đấu với Máy", "Bạn Thắng");
                 return;
             }
 
             if (gameEngine.isBoardFull()) {
                 tvTurnStatus.setText("TRẬN ĐẤU HÒA!");
+                cancelTimer();
                 showGameDialog("🤝", "Kết quả hòa với Máy.");
                 isGameActive = false;
-
-                // Lưu trận hòa Máy vào lịch sử đám mây
                 saveMatchHistory("Đấu với Máy", "Hòa");
                 return;
             }
 
             currentStringPlayer = "O";
             tvTurnStatus.setText("Máy đang suy nghĩ...");
+            cancelTimer(); // Tắt tạm thời trong lúc Máy tính toán
             botMakeMove();
         }
     }
 
-    // Hàm xử lý thu thập thông tin và đẩy dữ liệu trực tiếp lên Firebase Realtime Database
     private void saveMatchHistory(String mode, String matchResult) {
         String id = databaseReference.push().getKey();
         if (id == null) return;
@@ -365,8 +452,15 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void resetGame() {
+        cancelTimer();
         gameEngine.resetBoard();
         isGameActive = true;
+
+        // Trả thanh đo thời gian về tĩnh lặng ban đầu trước khi gieo xúc xắc mới
+        pbTimer.setMax(30);
+        pbTimer.setProgress(30);
+        tvTimerCountdown.setText("30s");
+        tvTimerCountdown.setTextColor(Color.parseColor("#FFCC00"));
 
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
@@ -376,36 +470,47 @@ public class GameActivity extends AppCompatActivity {
         determineFirstTurnRandomly();
     }
 
-    // =========================================================================
-    // Hàm khởi tạo Bảng thông báo Dialog Neon lớn giữa màn hình
-    // =========================================================================
     private void showGameDialog(String icon, String message) {
+        cancelTimer();
+
         AlertDialog.Builder builder = new AlertDialog.Builder(GameActivity.this);
         LayoutInflater inflater = getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.custom_dialog_layout, null);
         builder.setView(dialogView);
-        builder.setCancelable(false); // Bắt buộc nhấn nút mới được tắt bảng
+        builder.setCancelable(false);
 
-        // Ánh xạ các thành phần từ file custom_dialog_layout.xml
         TextView tvDialogIcon = dialogView.findViewById(R.id.tvDialogIcon);
         TextView tvDialogMessage = dialogView.findViewById(R.id.tvDialogMessage);
         Button btnDialogConfirm = dialogView.findViewById(R.id.btnDialogConfirm);
 
-        // Nạp nội dung chữ và icon tương ứng vào bảng
         tvDialogIcon.setText(icon);
         tvDialogMessage.setText(message);
 
         final AlertDialog alertDialog = builder.create();
 
-        // Xử lý sự kiện click vào nút Xác Nhận -> Đóng bảng thông báo
         btnDialogConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 alertDialog.dismiss();
+
+                // ĐÁ SỬA: Người chơi bấm nút đóng Dialog mở màn thành công -> Mở khóa cấm dòng chảy thời gian
+                if (isFirstTurnDialogOpen) {
+                    isFirstTurnDialogOpen = false;
+
+                    // Nếu là chế độ đấu Máy và KẾT QUẢ gieo đồng xu là Máy đi trước -> Ra lệnh cho Máy đánh luôn
+                    if (gameMode.equals("pve") && currentStringPlayer.equals("O")) {
+                        botMakeMove();
+                        return; // Chặn lại không chạy timer của người chơi
+                    }
+                }
+
+                // Luồng kích hoạt tính giờ thông thường (Dành cho PvP hoặc khi Người chơi được đánh PvE)
+                if (isGameActive && isNameInputDone && (gameMode.equals("pvp") || currentStringPlayer.equals("X"))) {
+                    startTurnTimer();
+                }
             }
         });
 
-        // Làm trong suốt viền đen bọc ngoài mặc định để hiển thị bo góc mượt mà
         if (alertDialog.getWindow() != null) {
             alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         }
