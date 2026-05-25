@@ -2,7 +2,7 @@ package ck65130454.carobattle;
 
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable; // THÊM MỚI: Để xử lý làm trong suốt viền dialog mặc định
+import android.graphics.drawable.ColorDrawable; // Xử lý làm trong suốt viền dialog mặc định
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.activity.OnBackPressedCallback;
-import androidx.appcompat.app.AlertDialog; // ĐỔI MỚI: Dùng AlertDialog của AppCompat cho đồng bộ
+import androidx.appcompat.app.AlertDialog; // Dùng AlertDialog của AppCompat cho đồng bộ
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -145,39 +145,65 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
+    // =========================================================================
+    // ĐÃ SỬA: Bắt buộc nhập tên, hiển thị thông báo lỗi mang phong cách game đối kháng
+    // =========================================================================
     private void showNameInputDialog() {
-        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
-        builder.setTitle("Nhập tên người chơi");
-        builder.setCancelable(false);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = getLayoutInflater();
 
-        LinearLayout layout = new LinearLayout(this);
-        layout.setOrientation(LinearLayout.VERTICAL);
-        layout.setPadding(60, 40, 60, 20);
+        // Nạp file layout custom mới tinh của bạn vào đây
+        View dialogView = inflater.inflate(R.layout.dialog_name_input_layout, null);
+        builder.setView(dialogView);
+        builder.setCancelable(false); // Bắt buộc người chơi thao tác trên bảng mới được vào game
 
-        final EditText inputX = new EditText(this);
-        inputX.setHint("Tên người chơi X (Ví dụ: Minh)");
-        layout.addView(inputX);
+        final AlertDialog alertDialog = builder.create();
 
-        final EditText inputO = new EditText(this);
-        inputO.setHint("Tên người chơi O (Ví dụ: Hoàng)");
-        layout.addView(inputO);
+        // Ánh xạ chính xác các ID từ file dialog_name_input_layout.xml của bạn
+        final EditText etPlayerX = dialogView.findViewById(R.id.etPlayerX);
+        final EditText etPlayerO = dialogView.findViewById(R.id.etPlayerO);
+        final TextView tvErrorMessage = dialogView.findViewById(R.id.tvErrorMessage); // Ánh xạ TextView báo lỗi
+        Button btnStartGame = dialogView.findViewById(R.id.btnStartGame);
 
-        builder.setView(layout);
+        // Bắt sự kiện khi nhấn nút "BẮT ĐẦU CHIẾN"
+        btnStartGame.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String nameX = etPlayerX.getText().toString().trim();
+                String nameO = etPlayerO.getText().toString().trim();
 
-        builder.setPositiveButton("Bắt đầu", (dialog, which) -> {
-            String nameX = inputX.getText().toString().trim();
-            String nameO = inputO.getText().toString().trim();
+                // KIỂM TRA ĐẦU VÀO: Nếu một trong hai hoặc cả hai ô trống tên
+                if (nameX.isEmpty() || nameO.isEmpty()) {
+                    // Kích hoạt hiển thị TextView thông báo lỗi
+                    tvErrorMessage.setVisibility(View.VISIBLE);
 
-            if (!nameX.isEmpty()) playerXName = nameX;
-            else playerXName = "Người chơi X";
+                    // Cập nhật thông tin cảnh báo phù hợp với từng ngữ cảnh
+                    if (nameX.isEmpty() && nameO.isEmpty()) {
+                        tvErrorMessage.setText("⚠️ CẢ HAI NGƯỜI CHƠI CHƯA GHI TÊN !");
+                    } else if (nameX.isEmpty()) {
+                        tvErrorMessage.setText("⚠️ X CHƯA KHAI BÁO DANH TÍNH !");
+                    } else {
+                        tvErrorMessage.setText("⚠️ O CHƯA KHAI BÁO DANH TÍNH !");
+                    }
+                    return; // Chặn đứng luồng xử lý, không cho đóng bảng hay vào game
+                }
 
-            if (!nameO.isEmpty()) playerOName = nameO;
-            else playerOName = "Người chơi O";
+                // Nếu đã điền đủ thông tin, gán vào các biến toàn cục
+                playerXName = nameX;
+                playerOName = nameO;
 
-            determineFirstTurnRandomly();
+                // Tắt bảng nhập tên và gọi hàm random lượt đi ngay lập tức
+                alertDialog.dismiss();
+                determineFirstTurnRandomly();
+            }
         });
 
-        builder.show();
+        // Xóa bỏ khung nền xám vuông mặc định giúp bo góc tuyệt đẹp theo tệp XML custom
+        if (alertDialog.getWindow() != null) {
+            alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        }
+
+        alertDialog.show();
     }
 
     private void determineFirstTurnRandomly() {
@@ -188,11 +214,11 @@ public class GameActivity extends AppCompatActivity {
             if (coin == 0) {
                 currentStringPlayer = "X";
                 tvTurnStatus.setText("Lượt của: " + playerXName + " (X)");
-                showGameDialog("🎲", "Ngẫu nhiên:\n" + playerXName + " đi trước!"); // Sửa thành Dialog
+                showGameDialog("🎲", "Ngẫu nhiên:\n" + playerXName + " đi trước!");
             } else {
                 currentStringPlayer = "O";
                 tvTurnStatus.setText("Lượt của: " + playerOName + " (O)");
-                showGameDialog("🎲", "Ngẫu nhiên:\n" + playerOName + " đi trước!"); // Sửa thành Dialog
+                showGameDialog("🎲", "Ngẫu nhiên:\n" + playerOName + " đi trước!");
             }
         } else {
             String diffText = "Dễ";
@@ -202,11 +228,11 @@ public class GameActivity extends AppCompatActivity {
             if (coin == 0) {
                 currentStringPlayer = "X";
                 tvTurnStatus.setText("Đấu với Máy (" + diffText + ") - Lượt của bạn (X)");
-                showGameDialog("🎲", "Ngẫu nhiên:\nBạn được đi trước!"); // Sửa thành Dialog
+                showGameDialog("🎲", "Ngẫu nhiên:\nBạn được đi trước!");
             } else {
                 currentStringPlayer = "O";
                 tvTurnStatus.setText("Máy đang suy nghĩ...");
-                showGameDialog("🤖", "Ngẫu nhiên:\nMáy được đi trước!"); // Sửa thành Dialog
+                showGameDialog("🤖", "Ngẫu nhiên:\nMáy được đi trước!");
                 botMakeMove();
             }
         }
@@ -227,7 +253,7 @@ public class GameActivity extends AppCompatActivity {
 
             if (gameEngine.checkWin("O")) {
                 tvTurnStatus.setText("MÁY ĐÃ CHIẾN THẮNG!");
-                showGameDialog("😭", "Rất tiếc!\nMáy đã thắng bạn."); // Sửa thành Dialog
+                showGameDialog("😭", "Rất tiếc!\nMáy đã thắng bạn.");
                 isGameActive = false;
 
                 // Lưu trận thua vào lịch sử đám mây
@@ -237,7 +263,7 @@ public class GameActivity extends AppCompatActivity {
 
             if (gameEngine.isBoardFull()) {
                 tvTurnStatus.setText("TRẬN ĐẤU HÒA!");
-                showGameDialog("🤝", "Kết quả hòa với Máy."); // Sửa thành Dialog
+                showGameDialog("🤝", "Kết quả hòa với Máy.");
                 isGameActive = false;
 
                 // Lưu trận hòa vào lịch sử đám mây
@@ -271,14 +297,14 @@ public class GameActivity extends AppCompatActivity {
             if (gameEngine.checkWin(currentStringPlayer)) {
                 String winnerName = currentStringPlayer.equals("X") ? playerXName : playerOName;
                 tvTurnStatus.setText(winnerName.toUpperCase() + " CHIẾN THẮNG!");
-                showGameDialog("👑", "Chúc mừng!\n" + winnerName + " đã chiến thắng!"); // Sửa thành Dialog
+                showGameDialog("👑", "Chúc mừng!\n" + winnerName + " đã chiến thắng!");
                 isGameActive = false;
 
                 // Lưu trận PvP thắng vào lịch sử đám mây
                 saveMatchHistory("Đấu với Người", winnerName + " Thắng");
             } else if (gameEngine.isBoardFull()) {
                 tvTurnStatus.setText("TRẬN ĐẤU HÒA!");
-                showGameDialog("🤝", "Bàn cờ đã đầy!\nKết quả hòa."); // Sửa thành Dialog
+                showGameDialog("🤝", "Bàn cờ đã đầy!\nKết quả hòa.");
                 isGameActive = false;
 
                 // Lưu trận PvP hòa vào lịch sử đám mây
@@ -301,7 +327,7 @@ public class GameActivity extends AppCompatActivity {
 
             if (gameEngine.checkWin("X")) {
                 tvTurnStatus.setText("BẠN ĐÃ CHIẾN THẮNG MÁY!");
-                showGameDialog("🎉", "Chúc mừng!\nBạn đã thắng Máy!"); // Sửa thành Dialog
+                showGameDialog("🎉", "Chúc mừng!\nBạn đã thắng Máy!");
                 isGameActive = false;
 
                 // Lưu trận thắng Máy vào lịch sử đám mây
@@ -311,7 +337,7 @@ public class GameActivity extends AppCompatActivity {
 
             if (gameEngine.isBoardFull()) {
                 tvTurnStatus.setText("TRẬN ĐẤU HÒA!");
-                showGameDialog("🤝", "Kết quả hòa với Máy."); // Sửa thành Dialog
+                showGameDialog("🤝", "Kết quả hòa với Máy.");
                 isGameActive = false;
 
                 // Lưu trận hòa Máy vào lịch sử đám mây
@@ -351,7 +377,7 @@ public class GameActivity extends AppCompatActivity {
     }
 
     // =========================================================================
-    // NÂNG CẤP TOÀN DIỆN: Hàm khởi tạo Bảng thông báo Dialog Neon lớn giữa màn hình
+    // Hàm khởi tạo Bảng thông báo Dialog Neon lớn giữa màn hình
     // =========================================================================
     private void showGameDialog(String icon, String message) {
         AlertDialog.Builder builder = new AlertDialog.Builder(GameActivity.this);
@@ -379,7 +405,7 @@ public class GameActivity extends AppCompatActivity {
             }
         });
 
-        // ĐÃ FIX: Làm trong suốt viền đen bọc ngoài mặc định để hiển thị bo góc mượt mà
+        // Làm trong suốt viền đen bọc ngoài mặc định để hiển thị bo góc mượt mà
         if (alertDialog.getWindow() != null) {
             alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         }

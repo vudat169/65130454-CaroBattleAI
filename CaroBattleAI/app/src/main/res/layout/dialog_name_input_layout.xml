@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="320dp"
+    android:layout_height="wrap_content"
+    android:background="@drawable/menu_container_bg"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="24dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="NHẬP TÊN NGƯỜI CHƠI"
+        android:textColor="#F0F0F0"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:letterSpacing="0.05"
+        android:layout_marginBottom="24dp"/>
+
+    <EditText
+        android:id="@+id/etPlayerX"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@drawable/custom_toast_bg"
+        android:hint="Tên người chơi X (Ví dụ: Minh)"
+        android:textColorHint="#88FFFFFF"
+        android:textColor="#EB0F0F"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:paddingHorizontal="16dp"
+        android:singleLine="true"
+        android:layout_marginBottom="16dp"/>
+
+    <EditText
+        android:id="@+id/etPlayerO"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@drawable/custom_toast_bg"
+        android:hint="Tên người chơi O (Ví dụ: Hoàng)"
+        android:textColorHint="#88FFFFFF"
+        android:textColor="#1A65E4"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:paddingHorizontal="16dp"
+        android:singleLine="true"
+        android:layout_marginBottom="8dp"/>
+
+    <TextView
+        android:id="@+id/tvErrorMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="⚠️ CHƯA NHẬP TÊN NGƯỜI CHƠI! KHÔNG THỂ BẮT ĐẦU!"
+        android:textColor="#FF3333"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        android:layout_marginBottom="16dp"
+        android:gravity="center"
+        android:letterSpacing="0.02"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnStartGame"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:background="@drawable/btn_pve_bg"
+        android:text="BẮT ĐẦU CHIẾN"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        android:textStyle="bold"/>
+
+</LinearLayout>

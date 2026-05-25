@@ -1,12 +1,16 @@
 package ck65130454.carobattle;
 
 import android.content.Intent;
-import android.media.MediaPlayer; // THÊM MỚI: Thư viện phát nhạc nền
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable; // THÊM MỚI: Để làm trong suốt nền viền đen mặc định của Dialog
+import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.view.LayoutInflater; // THÊM MỚI: Để nạp file layout XML độ khó custom
 import android.view.View;
 import android.widget.Button;
 
 import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AlertDialog; // ĐỔI MỚI: Dùng AlertDialog của AppCompat cho đồng bộ
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -17,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
     // Khai báo các biến Button để điều khiển giao diện
     private Button btnPvP, btnPvE, btnHistory, btnExit;
 
-    // THÊM MỚI: Biến MediaPlayer dùng chung (public static) cho toàn bộ App
+    // Biến MediaPlayer dùng chung (public static) cho toàn bộ App
     public static MediaPlayer bgMediaPlayer;
     // Biến kiểm soát trạng thái xem có đang chủ động chuyển màn hình hay không
     private boolean isChangingActivity = false;
@@ -34,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        // THÊM MỚI: Tự động khởi tạo và phát nhạc ngay khi vừa mở Màn hình chí
+        // Tự động khởi tạo và phát nhạc ngay khi vừa mở Màn hình chính
         if (bgMediaPlayer == null) {
             bgMediaPlayer = MediaPlayer.create(this, R.raw.bg_music);
             if (bgMediaPlayer != null) {
@@ -61,36 +65,72 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // 3. Cài đặt sự kiện Click cho nút "Đấu với Máy" (Hiển thị hộp thoại chọn độ khó)
+        // 3. ĐÃ NÂNG CẤP: Cài đặt sự kiện Click cho nút "Đấu với Máy" (Hiển thị hộp thoại Custom Neon)
         btnPvE.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Định nghĩa danh sách các mức độ khó hiển thị trên menu pop-up
-                final String[] levels = {"Dễ (Easy)", "Bình thường (Medium)", "Khó (Hard)"};
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                LayoutInflater inflater = getLayoutInflater();
+                // Nạp file giao diện chọn độ khó custom vào code Java
+                View dialogView = inflater.inflate(R.layout.dialog_difficulty_layout, null);
+                builder.setView(dialogView);
 
-                // Khởi tạo một Dialog thông báo của hệ thống Android
-                android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(MainActivity.this);
-                builder.setTitle("Chọn độ khó của Máy:");
+                final AlertDialog alertDialog = builder.create();
 
-                // Bắt sự kiện click chọn phần tử trong danh sách
-                builder.setItems(levels, new android.content.DialogInterface.OnClickListener() {
+                // Ánh xạ 3 nút bấm (Dễ, Bình thường, Khó) từ file dialog_difficulty_layout.xml
+                Button btnEasy = dialogView.findViewById(R.id.btnEasy);
+                Button btnMedium = dialogView.findViewById(R.id.btnMedium);
+                Button btnHard = dialogView.findViewById(R.id.btnHard);
+
+                // Thao tác Click chọn mức DỄ (Easy)
+                btnEasy.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(android.content.DialogInterface dialog, int which) {
-                        String selectedDifficulty = "easy"; // Vị trí thứ 0 là Dễ
-                        if (which == 1) selectedDifficulty = "medium"; // Vị trí thứ 1 là Bình thường
-                        if (which == 2) selectedDifficulty = "hard";   // Vị trí thứ 2 là Khó
+                    public void onClick(View v) {
+                        alertDialog.dismiss(); // Đóng bảng thông báo
+                        isChangingActivity = true; // Giữ nhạc nền chạy liên tục không ngắt
 
-                        isChangingActivity = true; // Đánh dấu là đang chuyển màn hình
-                        // Đóng gói cả chế độ chơi và độ khó để chuyển tiếp sang màn hình chơi
                         Intent intent = new Intent(MainActivity.this, GameActivity.class);
                         intent.putExtra("game_mode", "pve");
-                        intent.putExtra("difficulty", selectedDifficulty);
+                        intent.putExtra("difficulty", "easy");
                         startActivity(intent);
                     }
                 });
 
-                // Hiển thị hộp thoại lên màn hình
-                builder.show();
+                // Thao tác Click chọn mức BÌNH THƯỜNG (Medium)
+                btnMedium.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        alertDialog.dismiss();
+                        isChangingActivity = true;
+
+                        Intent intent = new Intent(MainActivity.this, GameActivity.class);
+                        intent.putExtra("game_mode", "pve");
+                        intent.putExtra("difficulty", "medium");
+                        startActivity(intent);
+                    }
+                });
+
+                // Thao tác Click chọn mức KHÓ (Hard)
+                btnHard.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        alertDialog.dismiss();
+                        isChangingActivity = true;
+
+                        Intent intent = new Intent(MainActivity.this, GameActivity.class);
+                        intent.putExtra("game_mode", "pve");
+                        intent.putExtra("difficulty", "hard");
+                        startActivity(intent);
+                    }
+                });
+
+                // Tối ưu quan trọng: Làm trong suốt phần nền vuông đen mặc định của hệ thống để hiển thị bo góc mượt mà
+                if (alertDialog.getWindow() != null) {
+                    alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                }
+
+                // Hiển thị hộp thoại phong cách Cyberpunk lên màn hình
+                alertDialog.show();
             }
         });
 
@@ -119,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    // THÊM MỚI: Quản lý trạng thái nhạc khi người dùng tương tác ẩn/hiện màn hình chính
+    // Quản lý trạng thái nhạc khi người dùng tương tác ẩn/hiện màn hình chính
     @Override
     protected void onPause() {
         super.onPause();
