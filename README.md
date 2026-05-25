@@ -25,8 +25,17 @@
 
 ## 📸 Hình Ảnh Giao Diện
 
-* **Màn hình chính:** ![Màn hình chính](image/manhinhchinh.png)
-* **Chế độ PvP:** ![Chế độ PvP](image/giaodienpvp.png)
-* **Chế độ PvE:** ![Chế độ PvE](image/giaodienpve.png)
-* **Chọn độ khó:** ![Chọn độ khó](image/giaodiendokho.png)
-* **Lịch sử đấu:** ![Lịch sử đấu](image/lichsudau.png)
+* **Màn hình chính:** Ứng dụng sở hữu menu chính trực quan, thiết kế theo phong cách Neon hiện đại giúp người chơi dễ dàng lựa chọn các chế độ chơi và xem lại lịch sử đấu.
+  ![Màn hình chính](image/manhinhchinh.png)
+
+* **Chế độ PvP (Đấu với Người):** Giao diện thi đấu hai người với thanh thời gian đếm ngược thông minh, tự động đổi màu sắc và khóa giờ khi đang tương tác hộp thoại.
+  ![Chế độ PvP](image/giaodienpvp.png)
+
+* **Chế độ PvE (Đấu với Máy):** Màn hình đối đầu trực tiếp với AI thông minh của hệ thống. Đồng hồ thời gian sẽ tự động tối ưu dựa theo lượt tính toán của Máy.
+  ![Chế độ PvE](image/giaodienpve.png)
+
+* **Bảng lựa chọn độ khó:** Hệ thống cung cấp 3 cấp độ AI (Dễ, Bình thường, Khó) phù hợp với trình độ từ người mới bắt đầu đến các kỳ thủ lão luyện.
+  ![Chọn độ khó](image/giaodiendokho.png)
+
+* **Lịch sử trận đấu:** Bảng thống kê hiển thị chi tiết kết quả các trận đấu trước đó, được đồng bộ trực tiếp theo thời gian thực từ cơ sở dữ liệu Firebase đám mây.
+  ![Lịch sử đấu](image/lichsudau.png)
