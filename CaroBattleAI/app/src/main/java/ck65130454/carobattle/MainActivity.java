@@ -54,18 +54,20 @@ public class MainActivity extends AppCompatActivity {
         btnHistory = findViewById(R.id.btnHistory);
         btnExit = findViewById(R.id.btnExit);
 
-        // 2. Cài đặt sự kiện Click cho nút "Đấu với Người"
+        // 2. ĐÃ ĐỔI: Cài đặt sự kiện Click cho nút "Đấu với Người" chuyển qua trạm chọn bàn cờ
         btnPvP.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 isChangingActivity = true; // Đánh dấu là đang chuyển màn hình
-                Intent intent = new Intent(MainActivity.this, GameActivity.class);
-                intent.putExtra("game_mode", "pvp"); // Gửi nhãn "pvp" sang màn hình Game
+
+                // ĐỔI TẠI ĐÂY: Chuyển hướng sang BoardChooserActivity thay vì GameActivity
+                Intent intent = new Intent(MainActivity.this, BoardChooserActivity.class);
+                intent.putExtra("game_mode", "pvp"); // Gửi nhãn "pvp" sang màn hình chọn bàn cờ
                 startActivity(intent);
             }
         });
 
-        // 3. ĐÃ NÂNG CẤP: Cài đặt sự kiện Click cho nút "Đấu với Máy" (Hiển thị hộp thoại Custom Neon)
+        // 3. ĐÃ NÂNG CẤP & ĐỔI: Cài đặt sự kiện Click cho nút "Đấu với Máy" (Dẫn sang trạm chọn bàn cờ sau khi chọn độ khó)
         btnPvE.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -89,7 +91,8 @@ public class MainActivity extends AppCompatActivity {
                         alertDialog.dismiss(); // Đóng bảng thông báo
                         isChangingActivity = true; // Giữ nhạc nền chạy liên tục không ngắt
 
-                        Intent intent = new Intent(MainActivity.this, GameActivity.class);
+                        // ĐỔI TẠI ĐÂY: Chuyển sang BoardChooserActivity
+                        Intent intent = new Intent(MainActivity.this, BoardChooserActivity.class);
                         intent.putExtra("game_mode", "pve");
                         intent.putExtra("difficulty", "easy");
                         startActivity(intent);
@@ -103,7 +106,8 @@ public class MainActivity extends AppCompatActivity {
                         alertDialog.dismiss();
                         isChangingActivity = true;
 
-                        Intent intent = new Intent(MainActivity.this, GameActivity.class);
+                        // ĐỔI TẠI ĐÂY: Chuyển sang BoardChooserActivity
+                        Intent intent = new Intent(MainActivity.this, BoardChooserActivity.class);
                         intent.putExtra("game_mode", "pve");
                         intent.putExtra("difficulty", "medium");
                         startActivity(intent);
@@ -117,7 +121,8 @@ public class MainActivity extends AppCompatActivity {
                         alertDialog.dismiss();
                         isChangingActivity = true;
 
-                        Intent intent = new Intent(MainActivity.this, GameActivity.class);
+                        // ĐỔI TẠI ĐÂY: Chuyển sang BoardChooserActivity
+                        Intent intent = new Intent(MainActivity.this, BoardChooserActivity.class);
                         intent.putExtra("game_mode", "pve");
                         intent.putExtra("difficulty", "hard");
                         startActivity(intent);

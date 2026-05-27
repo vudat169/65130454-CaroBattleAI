@@ -11,6 +11,14 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.CaroBattle">
+
+        <activity
+            android:name=".Game5x5Activity"
+            android:exported="false" />
+
+        <activity
+            android:name=".BoardChooserActivity"
+            android:exported="false" />
         <activity
             android:name=".HistoryActivity"
             android:exported="false" />

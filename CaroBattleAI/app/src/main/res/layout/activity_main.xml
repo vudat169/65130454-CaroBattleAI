@@ -32,7 +32,7 @@
             android:shadowDx="4"
             android:shadowDy="4"
             android:shadowRadius="6"
-            android:text="CARO GAME 4X4"
+            android:text="CARO GAME BATTLE"
             android:textColor="#FFFFFF"
             android:textSize="36sp"
             android:textStyle="bold" />
@@ -69,7 +69,7 @@
             android:layout_height="60dp"
             android:layout_marginBottom="16dp"
             android:background="@drawable/btn_pvp_bg"
-            android:text="⚔️  Đấu với Người"
+            android:text="  Đấu với Người"
             android:textColor="#FFFFFF"
             android:textSize="16sp"
             android:textStyle="bold" />
@@ -80,7 +80,7 @@
             android:layout_height="60dp"
             android:layout_marginBottom="16dp"
             android:background="@drawable/btn_pve_bg"
-            android:text="🤖  Đấu với Máy"
+            android:text="  Đấu với Máy"
             android:textColor="#FFFFFF"
             android:textSize="16sp"
             android:textStyle="bold" />
@@ -91,7 +91,7 @@
             android:layout_height="60dp"
             android:layout_marginBottom="16dp"
             android:background="@drawable/btn_history_bg"
-            android:text="📜  Lịch sử đấu"
+            android:text="  Lịch sử đấu"
             android:textColor="#FFFFFF"
             android:textSize="16sp"
             android:textStyle="bold" />
@@ -101,7 +101,7 @@
             android:layout_width="match_parent"
             android:layout_height="55dp"
             android:background="@drawable/btn_exit_bg"
-            android:text="❌  Thoát"
+            android:text="  Thoát"
             android:textColor="#FFFFFF"
             android:textSize="15sp"
             android:textStyle="bold" />
