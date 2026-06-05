@@ -1,3 +1,5 @@
+# link video dự án:
+https://drive.google.com/file/d/1l0lxtvaprcNJYXNMqh2i1QG4f5Kn56fI/view?usp=sharing&t=3.291
 
 # 65130454-CaroBattleAI
 Ứng dụng game cờ caro (đối kháng 4x4) tốc độ cao trên nền tảng Android (Java) với giao diện Neon hiện đại, tích hợp AI và đám mây.
